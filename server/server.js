@@ -69,7 +69,7 @@ app.post("/create-payment", upload.single("logo"), async (req, res) => {
             body: {
                 items: [{
                     title: `Mural: ${nw}x${nh}px`,
-                    unit_price: nw * nh * 50,
+                    unit_price: nw * nh * 25,
                     quantity: 1,
                     currency_id: "ARS"
                 }],

@@ -156,7 +156,7 @@
             if (detectaChoque(x, y, w, h)) { render(); return; }
 
             seleccion = { x, y, w, h };
-            document.getElementById("price-tag").innerText = `$${(w*h*50).toLocaleString()}`;
+            document.getElementById("price-tag").innerText = `$${(w*h*25).toLocaleString()}`;
             document.getElementById("dim-text").innerText = `${w}x${h} píxeles`;
             document.getElementById("payment-form").style.display = "block";
             document.getElementById("overlay").style.display = "block";
