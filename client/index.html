@@ -29,16 +29,16 @@
         #pay-btn { 
             width: 100%; padding: 16px; background: #009ee3; color: white; border: none; 
             cursor: pointer; font-weight: bold; border-radius: 10px; font-size: 1.1em;
-            box-shadow: 0 5px #007bbd; /* Sombra sólida */
-            transition: all 0.05s active; 
+            box-shadow: 0 5px #007bbd; 
+            transition: all 0.05s ease; 
             outline: none; margin-top: 10px;
         }
 
         #pay-btn:hover { background: #00aefb; }
 
         #pay-btn:active {
-            transform: translateY(4px); /* Se mueve hacia abajo */
-            box-shadow: 0 1px #007bbd; /* Se reduce la sombra */
+            transform: translateY(4px); 
+            box-shadow: 0 1px #007bbd; 
             background: #0089c4;
         }
 
@@ -87,24 +87,37 @@
         async function init() {
             try {
                 const res = await fetch("/spaces");
+                if (!res.ok) throw new Error("Error en red");
                 ocupados = await res.json();
-            } catch (e) { console.error("Error cargando espacios"); }
+            } catch (e) { 
+                console.error("Error cargando espacios:", e); 
+                ocupados = []; 
+            }
             render();
         }
 
         function render() {
-            ctx.fillStyle = "#000"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Limpiar fondo
+            ctx.fillStyle = "#000"; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Dibujar grilla
             ctx.strokeStyle = "#1a1a1a";
             for(let i=0; i<canvas.width; i+=PIXEL_SIZE) {
                 ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i, canvas.height); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(canvas.width, i); ctx.stroke();
             }
+            for(let j=0; j<canvas.height; j+=PIXEL_SIZE) {
+                ctx.beginPath(); ctx.moveTo(0,j); ctx.lineTo(canvas.width, j); ctx.stroke();
+            }
+
+            // Dibujar logos con verificación de seguridad (Fix includes error)
             ocupados.forEach(s => {
-                const img = new Image();
-                // Usamos ruta relativa para evitar errores de Mixed Content
-                const fileName = s.imageUrl.includes('/') ? s.imageUrl.split('/').pop() : s.imageUrl;
-                img.src = `/uploads/${fileName}`;
-                img.onload = () => ctx.drawImage(img, s.x, s.y, s.width, s.height);
+                if (s && s.imageUrl && typeof s.imageUrl === 'string') {
+                    const img = new Image();
+                    const fileName = s.imageUrl.split('/').pop();
+                    img.src = `/uploads/${fileName}`;
+                    img.onload = () => ctx.drawImage(img, s.x, s.y, s.width, s.height);
+                }
             });
         }
 
@@ -131,7 +144,7 @@
 
             ctx.strokeStyle = detectaChoque(x, y, w, h) ? "#ff4757" : "#009ee3"; 
             ctx.lineWidth = 3;
-            ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
+            ctx.strokeRect(x, y, w, h);
         };
 
         canvas.onmouseup = () => {
@@ -144,7 +157,7 @@
 
             seleccion = { x, y, w, h };
             document.getElementById("price-tag").innerText = `$${(w*h*50).toLocaleString()}`;
-            document.getElementById("dim-text").innerText = `${w}x${h} píxeles en [${x},${y}]`;
+            document.getElementById("dim-text").innerText = `${w}x${h} píxeles`;
             document.getElementById("payment-form").style.display = "block";
             document.getElementById("overlay").style.display = "block";
         };
@@ -152,7 +165,7 @@
         document.getElementById("pay-btn").onclick = async () => {
             const email = document.getElementById("email").value;
             const file = document.getElementById("logoInput").files[0];
-            if(!email || !file) return alert("Completa los datos");
+            if(!email || !file) return alert("Por favor completa los campos.");
             
             const btn = document.getElementById("pay-btn");
             btn.innerText = "Procesando...";
@@ -168,7 +181,8 @@
                 const data = await res.json();
                 if (data.init_point) window.location.href = data.init_point;
                 else alert("Error: " + (data.error || "No se pudo crear el pago"));
-            } catch (e) { alert("Error de conexión"); }
+            } catch (e) { alert("Error de conexión con el servidor"); }
+            
             btn.innerText = "ADQUIRIR ESPACIO";
             btn.disabled = false;
         };
