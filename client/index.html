@@ -3,14 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Pixel Million</title>
+    <title>The Pixel Million - Tu Espacio en la Red</title>
     <style>
-        body { background: #0a0a0a; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin: 0; padding: 20px; }
+        /* Estilos generales con fondo blanco */
+        body { 
+            background: #f8f9fa; /* Un blanco grisáceo muy claro */
+            color: #333; /* Texto oscuro para buen contraste */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            margin: 0; 
+            padding: 20px; 
+        }
         
+        /* Título más llamativo en gradiente */
+        h1 {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(90deg, #009ee3 0%, #27ae60 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.1); /* Ligera sombra para definición */
+        }
+
         #canvas-container { 
-            position: relative; display: inline-block; border: 3px solid #333; 
-            background: #000; box-shadow: 0 10px 40px rgba(0,0,0,0.7);
-            max-width: 98%; overflow: auto; margin-top: 10px;
+            position: relative; 
+            display: inline-block; 
+            border: 4px solid #333; 
+            background: #111; /* El interior del canvas sigue oscuro para contraste */
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 98%; 
+            overflow: auto; 
+            margin-top: 10px;
         }
 
         canvas { display: block; cursor: crosshair; }
@@ -57,8 +81,9 @@
 </head>
 <body>
 
-    <h1>The Pixel Million</h1>
-    <p>Selecciona un área de 10x10 píxeles o más para colocar tu marca.</p>
+    <h1>THE PIXEL MILLION</h1>
+    <p>Un mural digital exclusivo de 1.200.000 píxeles. Compra tu espacio hoy.</p>
+    <p style="font-size: 0.9em; color: #666;">Arrastra el mouse sobre el lienzo gris para seleccionar y comprar tu lugar.</p>
 
     <div id="canvas-container">
         <canvas id="pixelCanvas" width="1200" height="1000"></canvas>
@@ -97,12 +122,12 @@
         }
 
         function render() {
-            // Limpiar fondo
-            ctx.fillStyle = "#000"; 
+            // Fondo oscuro del canvas para contraste
+            ctx.fillStyle = "#1a1a1a"; 
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Dibujar grilla
-            ctx.strokeStyle = "#1a1a1a";
+            // Grilla de fondo
+            ctx.strokeStyle = "#2c3e50"; // Un gris oscuro más definido
             for(let i=0; i<canvas.width; i+=PIXEL_SIZE) {
                 ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i, canvas.height); ctx.stroke();
             }
@@ -110,7 +135,7 @@
                 ctx.beginPath(); ctx.moveTo(0,j); ctx.lineTo(canvas.width, j); ctx.stroke();
             }
 
-            // Dibujar logos con verificación de seguridad (Fix includes error)
+            // Dibujar logos con verificación de seguridad
             ocupados.forEach(s => {
                 if (s && s.imageUrl && typeof s.imageUrl === 'string') {
                     const img = new Image();
@@ -156,7 +181,7 @@
             if (detectaChoque(x, y, w, h)) { render(); return; }
 
             seleccion = { x, y, w, h };
-            document.getElementById("price-tag").innerText = `$${(w*h*25).toLocaleString()}`;
+            document.getElementById("price-tag").innerText = `$${(w*h*50).toLocaleString()}`;
             document.getElementById("dim-text").innerText = `${w}x${h} píxeles`;
             document.getElementById("payment-form").style.display = "block";
             document.getElementById("overlay").style.display = "block";
